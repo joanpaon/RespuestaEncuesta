@@ -18,8 +18,11 @@ package org.japo.java.forms;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.net.URL;
+import java.util.Properties;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -27,10 +30,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import org.japo.java.events.AEM;
+import org.japo.java.libraries.UtilesSwing;
 
 /**
  *
@@ -38,86 +41,70 @@ import org.japo.java.events.AEM;
  */
 public class GUI extends JFrame {
 
-    // Tamaño de la ventana
-    public static final int VENTANA_ANC = 400;
-    public static final int VENTANA_ALT = 250;
+    // Propiedades App
+    public static final String PRP_LOOK_AND_FEEL = "look_and_feel";
+    public static final String PRP_FAVICON = "favicon";
+    public static final String PRP_WIDTH = "image.width";
+    public static final String PRP_HEIGHT = "image.height";
+    public static final String PRP_QUESTION = "question";
+    public static final String PRP_YES = "image.yes";
+    public static final String PRP_NOT = "image.not";
+    public static final String PRP_MAY = "image.maybe";
 
-    // Tamaño de la imagen
-    public static final int IMAGEN_ANC = 100;
-    public static final int IMAGEN_ALT = 100;
+    // Valores por Defecto
+    public static final String DEF_LOOK_AND_FEEL = UtilesSwing.LNF_NIMBUS;
+    public static final String DEF_FAVICON = "img/favicon.png";
+    public static final String DEF_WIDTH = "100";
+    public static final String DEF_HEIGHT = "100";
+    public static final String DEF_QUESTION = "¿Cree Ud. que éste va a ser un buen año?";
+    public static final String DEF_YES = "img/si.jpg";
+    public static final String DEF_NOT = "img/no.jpg";
+    public static final String DEF_MAY = "img/tv.jpg";
 
-    // Pregunta de la encuesta
-    private static final String PREGUNTA = "¿Cree Ud. que éste va a ser un buen año?";
-
-    // Nombres de los archivos gráficos
-    private static final String IMG_SI = "si.jpg";
-    private static final String IMG_NO = "no.jpg";
-    private static final String IMG_TV = "tv.jpg";
-
-    // Ruta a los archivos gráficos
-    private static final String RUTA_IMG = "images";
-
-    // Referencias a los componentes
+    // Referencias
+    private Properties prp;
     private JLabel lblPregunta;
     private JRadioButton rbtSI;
     private JRadioButton rbtNO;
     private JRadioButton rbtTV;
     private JLabel lblImagen;
 
-    public GUI() {
-        // Inicialización PREVIA
-        beforeInit();
+    // Constructor
+    public GUI(Properties prp) {
+        // Inicialización Anterior
+        initBefore(prp);
 
-        // Creación del interfaz
+        // Creación Interfaz
         initComponents();
 
-        // Inicialización POSTERIOR
-        afterInit();
+        // Inicializacion Posterior
+        initAfter();
     }
 
     // Construcción del IGU
     private void initComponents() {
-        // Bordes
-        Border brdPnlPrincipal = new EmptyBorder(10, 10, 10, 10);
-        Border brdPnlPregunta = new TitledBorder("Pregunta");
-        Border brdPnlOpciones = new TitledBorder("Opciones");
-        Border brdPnlImagen = new TitledBorder("Imagen");
-
-        // Tamaños
-        Dimension dimBotonRadio = new Dimension(150, 30);
-        Dimension dimPnlPregunta = new Dimension(0, 50);
-        Dimension dimPnlOpciones = new Dimension(190, 0);
-        Dimension dimPnlImagen = new Dimension(170, 0);
-
-        // Fuente
-        Font f = new Font("Calibri", Font.BOLD, 20);
-
-        // Gestor de Eventos de Accion
-        AEM aem = new AEM(this);
-
         // Etiqueta Pregunta
-        lblPregunta = new JLabel(PREGUNTA);
-        lblPregunta.setFont(f);
+        lblPregunta = new JLabel(prp.getProperty(PRP_QUESTION, DEF_QUESTION));
+        lblPregunta.setFont(new Font("Calibri", Font.BOLD, 30));
         lblPregunta.setHorizontalAlignment(JLabel.CENTER);
 
         // Opción SI
         rbtSI = new JRadioButton("Afirmativo");
-        rbtSI.setFont(f);
-        rbtSI.setPreferredSize(dimBotonRadio);
-        rbtSI.addActionListener(aem);
+        rbtSI.setFont(new Font("Calibri", Font.BOLD, 20));
+        rbtSI.setPreferredSize(new Dimension(150, 30));
+        rbtSI.addActionListener(new AEM(this));
 
         // Opción NO
         rbtNO = new JRadioButton("Negativo");
-        rbtNO.setFont(f);
-        rbtNO.setPreferredSize(dimBotonRadio);
-        rbtNO.addActionListener(aem);
+        rbtNO.setFont(new Font("Calibri", Font.BOLD, 20));
+        rbtNO.setPreferredSize(new Dimension(150, 30));
+        rbtNO.addActionListener(new AEM(this));
 
         // Opción TV
         rbtTV = new JRadioButton("N/S - N/C");
-        rbtTV.setFont(f);
-        rbtTV.setPreferredSize(dimBotonRadio);
-        rbtTV.addActionListener(aem);
-        rbtTV.setSelected(true);
+        rbtTV.setFont(new Font("Calibri", Font.BOLD, 20));
+        rbtTV.setPreferredSize(new Dimension(150, 30));
+        rbtTV.addActionListener(new AEM(this));
 
         // Coordinador de botones
         ButtonGroup bg = new ButtonGroup();
@@ -130,79 +117,95 @@ public class GUI extends JFrame {
 
         // Panel Pregunta
         JPanel pnlPregunta = new JPanel();
-        pnlPregunta.setPreferredSize(dimPnlPregunta);
-        pnlPregunta.setBorder(brdPnlPregunta);
+        pnlPregunta.setPreferredSize(new Dimension(0, 100));
+        pnlPregunta.setBorder(new TitledBorder("Pregunta"));
+        pnlPregunta.setLayout(new GridBagLayout());
         pnlPregunta.add(lblPregunta);
 
         // Panel Opciones
         JPanel pnlOpciones = new JPanel();
-        pnlOpciones.setPreferredSize(dimPnlOpciones);
-        pnlOpciones.setBorder(brdPnlOpciones);
+        pnlOpciones.setPreferredSize(new Dimension(190, 0));
+        pnlOpciones.setBorder(new TitledBorder("Opciones"));
         pnlOpciones.add(rbtSI);
         pnlOpciones.add(rbtNO);
         pnlOpciones.add(rbtTV);
 
         // Panel Imagen
         JPanel pnlImagen = new JPanel();
-        pnlImagen.setPreferredSize(dimPnlImagen);
-        pnlImagen.setBorder(brdPnlImagen);
+        pnlImagen.setPreferredSize(new Dimension(170, 0));
+        pnlImagen.setBorder(new TitledBorder("Imagen"));
+        pnlImagen.setLayout(new GridBagLayout());
         pnlImagen.add(lblImagen);
 
         // Panel Principal
         JPanel pnlPpal = new JPanel();
         pnlPpal.setLayout(new BorderLayout(5, 5));
-        pnlPpal.setBorder(brdPnlPrincipal);
+        pnlPpal.setBorder(new EmptyBorder(10, 10, 10, 10));
         pnlPpal.add(pnlPregunta, BorderLayout.NORTH);
-        pnlPpal.add(pnlOpciones, BorderLayout.WEST);
+        pnlPpal.add(pnlOpciones, BorderLayout.CENTER);
         pnlPpal.add(pnlImagen, BorderLayout.EAST);
 
         // Ventana principal
-        setTitle("Respuesta Encuesta");
         setContentPane(pnlPpal);
+        setTitle("Swing Manual #09");
         setResizable(false);
-        setSize(VENTANA_ANC, VENTANA_ALT);
+        setSize(500, 300);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    // Inicialización antes del IGU
-    private void beforeInit() {
+    // Inicialización Anterior    
+    private void initBefore(Properties prp) {
+        // Memorizar Referencia
+        this.prp = prp;
 
+        // Establecer LnF
+        UtilesSwing.establecerLnF(prp.getProperty(PRP_LOOK_AND_FEEL, DEF_LOOK_AND_FEEL));
     }
 
-    // Inicialización después del IGU
-    private void afterInit() {
+    // Inicialización Posterior
+    private void initAfter() {
+        // Establecer Favicon
+        UtilesSwing.establecerFavicon(this, prp.getProperty(PRP_FAVICON, DEF_FAVICON));
+
+        // Selección Inicial
         rbtTV.doClick();
     }
 
-    public void procesarEncuesta(ActionEvent e) {
-        // Ruta Imagen
-        String rutaImagen;
-        
-        // Selección Imagen
-        if (e.getSource().equals(rbtSI)) {
-            rutaImagen = RUTA_IMG + "/" + IMG_SI;
-        } else if (e.getSource().equals(rbtNO)) {
-            rutaImagen = RUTA_IMG + "/" + IMG_NO;
-        } else {
-            rutaImagen = RUTA_IMG + "/" + IMG_TV;
+    public void procesarEncuesta(ActionEvent ae) {
+        try {
+            // Ruta Imagen
+            String ruta;
+
+            // Selección Ruta Imagen
+            if (ae.getSource().equals(rbtSI)) {
+                ruta = prp.getProperty(PRP_YES, DEF_YES);
+            } else if (ae.getSource().equals(rbtNO)) {
+                ruta = prp.getProperty(PRP_NOT, DEF_NOT);
+            } else {
+                ruta = prp.getProperty(PRP_MAY, DEF_MAY);
+            }
+
+            // Ruta > URL
+            URL url = ClassLoader.getSystemResource(ruta);
+
+            // URL > Image (Inicial)
+            Image imgIni = new ImageIcon(url).getImage();
+
+            // Tamaño Reescalado
+            int ancho = Integer.parseInt(prp.getProperty(PRP_WIDTH, DEF_WIDTH));
+            int alto = Integer.parseInt(prp.getProperty(PRP_HEIGHT, DEF_HEIGHT));
+
+            // Image (Inicial) + Rescalado > Image (Final)
+            Image imgFin = imgIni.getScaledInstance(ancho, alto, Image.SCALE_FAST);
+
+            // Image (Final) > Icon
+            Icon i = new ImageIcon(imgFin);
+
+            // Icon > Etiqueta Imagen
+            lblImagen.setIcon(i);
+        } catch (Exception e) {
+            System.out.println(e);
         }
-        
-        // Archivo Gráfico > ImageIcon
-        ImageIcon ii = new ImageIcon(rutaImagen);
-        
-        // ImageIcon > Image (Inicial)
-        Image imgIni = ii.getImage();
-
-        // Image (Inicial) + Rescalado > Image (Final)
-        Image imgFin = imgIni.getScaledInstance(
-            IMAGEN_ANC, IMAGEN_ALT, Image.SCALE_FAST);
-        
-        // Image (Final) > Icon
-        Icon i = new ImageIcon(imgFin);
-        
-        // Icon > Etiqueta Imagen
-        lblImagen.setIcon(i);
     }
-
 }
