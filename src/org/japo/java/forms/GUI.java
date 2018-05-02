@@ -16,6 +16,7 @@
 package org.japo.java.forms;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagLayout;
@@ -23,6 +24,8 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.Properties;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -30,6 +33,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import org.japo.java.events.AEM;
@@ -42,31 +46,37 @@ import org.japo.java.libraries.UtilesSwing;
 public class GUI extends JFrame {
 
     // Propiedades App
-    public static final String PRP_LOOK_AND_FEEL = "look_and_feel";
-    public static final String PRP_FAVICON = "favicon";
-    public static final String PRP_WIDTH = "image.width";
-    public static final String PRP_HEIGHT = "image.height";
+    public static final String PRP_LOOK_AND_FEEL_PROFILE = "look_and_feel_profile";
+    public static final String PRP_FAVICON_RESOURCE = "favicon_resource";
+    public static final String PRP_BACKGROUND_RESOURCE = "background_resource";
+    public static final String PRP_FONT1_RESOURCE = "font1_resource";
+    public static final String PRP_FONT2_RESOURCE = "font2_resource";
+    public static final String PRP_IMAGE_WIDTH = "image_width";
+    public static final String PRP_IMAGE_HEIGHT = "image_height";
     public static final String PRP_QUESTION = "question";
-    public static final String PRP_YES = "image.yes";
-    public static final String PRP_NOT = "image.not";
-    public static final String PRP_MAY = "image.maybe";
+    public static final String PRP_IMAGE_YES_RESOURCE = "image_yes_resource";
+    public static final String PRP_IMAGE_NOT_RESOURCE = "image_not_resource";
+    public static final String PRP_IMAGE_MAY_RESOURCE = "image_maybe_resource";
 
     // Valores por Defecto
-    public static final String DEF_LOOK_AND_FEEL = UtilesSwing.LNF_NIMBUS;
-    public static final String DEF_FAVICON = "img/favicon.png";
-    public static final String DEF_WIDTH = "100";
-    public static final String DEF_HEIGHT = "100";
+    public static final String DEF_LOOK_AND_FEEL_PROFILE = UtilesSwing.LNF_WINDOWS_PROFILE;
+    public static final String DEF_FAVICON_RESOURCE = "images/favicon.png";
+    public static final String DEF_BACKGROUND_RESOURCE = "images/background.png";
+    public static final String DEF_FONT1_RESOURCE = "fonts/default_font1.ttf";
+    public static final String DEF_FONT2_RESOURCE = "fonts/default_font2.ttf";
+    public static final String DEF_IMAGE_WIDTH = "100";
+    public static final String DEF_IMAGE_HEIGHT = "100";
     public static final String DEF_QUESTION = "¿Cree Ud. que éste va a ser un buen año?";
-    public static final String DEF_YES = "img/si.jpg";
-    public static final String DEF_NOT = "img/no.jpg";
-    public static final String DEF_MAY = "img/tv.jpg";
+    public static final String DEF_IMAGE_YES_RESOURCE = "images/yes.jpg";
+    public static final String DEF_IMAGE_NOT_RESOURCE = "images/not.jpg";
+    public static final String DEF_IMAGE_MAY_RESOURCE = "images/may.jpg";
 
     // Referencias
     private Properties prp;
     private JLabel lblPregunta;
-    private JRadioButton rbtSI;
-    private JRadioButton rbtNO;
-    private JRadioButton rbtTV;
+    private JRadioButton rbtYes;
+    private JRadioButton rbtNot;
+    private JRadioButton rbtMay;
     private JLabel lblImagen;
 
     // Constructor
@@ -85,55 +95,84 @@ public class GUI extends JFrame {
     private void initComponents() {
         // Etiqueta Pregunta
         lblPregunta = new JLabel(prp.getProperty(PRP_QUESTION, DEF_QUESTION));
-        lblPregunta.setFont(new Font("Calibri", Font.BOLD, 30));
+        lblPregunta.setFont(UtilesSwing.importarFuenteRecurso(
+                prp.getProperty(PRP_FONT1_RESOURCE, DEF_FONT1_RESOURCE)).
+                deriveFont(Font.PLAIN, 24f));
         lblPregunta.setHorizontalAlignment(JLabel.CENTER);
 
         // Opción SI
-        rbtSI = new JRadioButton("Afirmativo");
-        rbtSI.setFont(new Font("Calibri", Font.BOLD, 20));
-        rbtSI.setPreferredSize(new Dimension(150, 30));
-        rbtSI.addActionListener(new AEM(this));
+        rbtYes = new JRadioButton("Seguramente");
+        rbtYes.setFont(UtilesSwing.importarFuenteRecurso(
+                prp.getProperty(PRP_FONT1_RESOURCE, DEF_FONT1_RESOURCE)).
+                deriveFont(Font.PLAIN, 20f));
+        rbtYes.setPreferredSize(new Dimension(200, 30));
+        rbtYes.addActionListener(new AEM(this));
 
         // Opción NO
-        rbtNO = new JRadioButton("Negativo");
-        rbtNO.setFont(new Font("Calibri", Font.BOLD, 20));
-        rbtNO.setPreferredSize(new Dimension(150, 30));
-        rbtNO.addActionListener(new AEM(this));
+        rbtNot = new JRadioButton("Dificilmente");
+        rbtNot.setFont(UtilesSwing.importarFuenteRecurso(
+                prp.getProperty(PRP_FONT1_RESOURCE, DEF_FONT1_RESOURCE)).
+                deriveFont(Font.PLAIN, 20f));
+        rbtNot.setPreferredSize(new Dimension(200, 30));
+        rbtNot.addActionListener(new AEM(this));
 
-        // Opción TV
-        rbtTV = new JRadioButton("N/S - N/C");
-        rbtTV.setFont(new Font("Calibri", Font.BOLD, 20));
-        rbtTV.setPreferredSize(new Dimension(150, 30));
-        rbtTV.addActionListener(new AEM(this));
+        // Opción NS/NC
+        rbtMay = new JRadioButton("No sabría decir");
+        rbtMay.setFont(UtilesSwing.importarFuenteRecurso(
+                prp.getProperty(PRP_FONT1_RESOURCE, DEF_FONT1_RESOURCE)).
+                deriveFont(Font.PLAIN, 20f));
+        rbtMay.setPreferredSize(new Dimension(200, 30));
+        rbtMay.addActionListener(new AEM(this));
 
         // Coordinador de botones
         ButtonGroup bg = new ButtonGroup();
-        bg.add(rbtSI);
-        bg.add(rbtNO);
-        bg.add(rbtTV);
+        bg.add(rbtYes);
+        bg.add(rbtNot);
+        bg.add(rbtMay);
 
         // Etiqueta con imagen
         lblImagen = new JLabel();
 
+        // Borde Panel Pregunta
+        TitledBorder brdPregunta = new TitledBorder("Pregunta");
+        brdPregunta.setTitleFont(UtilesSwing.importarFuenteRecurso(
+                prp.getProperty(PRP_FONT2_RESOURCE, DEF_FONT2_RESOURCE)).
+                deriveFont(Font.BOLD, 18f));
+
         // Panel Pregunta
         JPanel pnlPregunta = new JPanel();
         pnlPregunta.setPreferredSize(new Dimension(0, 100));
-        pnlPregunta.setBorder(new TitledBorder("Pregunta"));
+        pnlPregunta.setBorder(brdPregunta);
         pnlPregunta.setLayout(new GridBagLayout());
         pnlPregunta.add(lblPregunta);
+
+        // Borde Panel Opciones
+        TitledBorder brdOpciones = new TitledBorder("Opciones");
+        brdOpciones.setTitleFont(UtilesSwing.importarFuenteRecurso(
+                prp.getProperty(PRP_FONT2_RESOURCE, DEF_FONT2_RESOURCE)).
+                deriveFont(Font.BOLD, 18f));
 
         // Panel Opciones
         JPanel pnlOpciones = new JPanel();
         pnlOpciones.setPreferredSize(new Dimension(190, 0));
-        pnlOpciones.setBorder(new TitledBorder("Opciones"));
-        pnlOpciones.add(rbtSI);
-        pnlOpciones.add(rbtNO);
-        pnlOpciones.add(rbtTV);
+        pnlOpciones.setBorder(brdOpciones);
+        pnlOpciones.setLayout(new BoxLayout(pnlOpciones, BoxLayout.Y_AXIS));
+        pnlOpciones.add(Box.createHorizontalStrut(50));
+        pnlOpciones.add(rbtYes);
+        pnlOpciones.add(rbtNot);
+        pnlOpciones.add(rbtMay);
+        pnlOpciones.add(Box.createHorizontalStrut(50));
 
+        // Borde Panel Imágen
+        TitledBorder brdImagen = new TitledBorder("Imagen");
+        brdImagen.setTitleFont(UtilesSwing.importarFuenteRecurso(
+                prp.getProperty(PRP_FONT2_RESOURCE, DEF_FONT2_RESOURCE)).
+                deriveFont(Font.BOLD, 18f));
+        
         // Panel Imagen
         JPanel pnlImagen = new JPanel();
         pnlImagen.setPreferredSize(new Dimension(170, 0));
-        pnlImagen.setBorder(new TitledBorder("Imagen"));
+        pnlImagen.setBorder(brdImagen);
         pnlImagen.setLayout(new GridBagLayout());
         pnlImagen.add(lblImagen);
 
@@ -142,14 +181,15 @@ public class GUI extends JFrame {
         pnlPpal.setLayout(new BorderLayout(5, 5));
         pnlPpal.setBorder(new EmptyBorder(10, 10, 10, 10));
         pnlPpal.add(pnlPregunta, BorderLayout.NORTH);
-        pnlPpal.add(pnlOpciones, BorderLayout.CENTER);
         pnlPpal.add(pnlImagen, BorderLayout.EAST);
+        pnlPpal.add(pnlOpciones, BorderLayout.CENTER);
 
         // Ventana principal
         setContentPane(pnlPpal);
         setTitle("Swing Manual #09");
-        setResizable(false);
+//        setResizable(false);
         setSize(500, 300);
+        setMinimumSize(new Dimension(500, 300));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
@@ -160,16 +200,18 @@ public class GUI extends JFrame {
         this.prp = prp;
 
         // Establecer LnF
-        UtilesSwing.establecerLnF(prp.getProperty(PRP_LOOK_AND_FEEL, DEF_LOOK_AND_FEEL));
+        UtilesSwing.establecerLnFProfile(prp.getProperty(
+                PRP_LOOK_AND_FEEL_PROFILE, DEF_LOOK_AND_FEEL_PROFILE));
     }
 
     // Inicialización Posterior
     private void initAfter() {
         // Establecer Favicon
-        UtilesSwing.establecerFavicon(this, prp.getProperty(PRP_FAVICON, DEF_FAVICON));
+        UtilesSwing.establecerFavicon(this, prp.getProperty(
+                PRP_FAVICON_RESOURCE, DEF_FAVICON_RESOURCE));
 
         // Selección Inicial
-        rbtTV.doClick();
+        rbtMay.doClick();
     }
 
     public void procesarEncuesta(ActionEvent ae) {
@@ -178,12 +220,12 @@ public class GUI extends JFrame {
             String ruta;
 
             // Selección Ruta Imagen
-            if (ae.getSource().equals(rbtSI)) {
-                ruta = prp.getProperty(PRP_YES, DEF_YES);
-            } else if (ae.getSource().equals(rbtNO)) {
-                ruta = prp.getProperty(PRP_NOT, DEF_NOT);
+            if (ae.getSource().equals(rbtYes)) {
+                ruta = prp.getProperty(PRP_IMAGE_YES_RESOURCE, DEF_IMAGE_YES_RESOURCE);
+            } else if (ae.getSource().equals(rbtNot)) {
+                ruta = prp.getProperty(PRP_IMAGE_NOT_RESOURCE, DEF_IMAGE_NOT_RESOURCE);
             } else {
-                ruta = prp.getProperty(PRP_MAY, DEF_MAY);
+                ruta = prp.getProperty(PRP_IMAGE_MAY_RESOURCE, DEF_IMAGE_MAY_RESOURCE);
             }
 
             // Ruta > URL
@@ -193,8 +235,8 @@ public class GUI extends JFrame {
             Image imgIni = new ImageIcon(url).getImage();
 
             // Tamaño Reescalado
-            int ancho = Integer.parseInt(prp.getProperty(PRP_WIDTH, DEF_WIDTH));
-            int alto = Integer.parseInt(prp.getProperty(PRP_HEIGHT, DEF_HEIGHT));
+            int ancho = Integer.parseInt(prp.getProperty(PRP_IMAGE_WIDTH, DEF_IMAGE_WIDTH));
+            int alto = Integer.parseInt(prp.getProperty(PRP_IMAGE_HEIGHT, DEF_IMAGE_HEIGHT));
 
             // Image (Inicial) + Rescalado > Image (Final)
             Image imgFin = imgIni.getScaledInstance(ancho, alto, Image.SCALE_FAST);
@@ -204,7 +246,7 @@ public class GUI extends JFrame {
 
             // Icon > Etiqueta Imagen
             lblImagen.setIcon(i);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             System.out.println(e);
         }
     }

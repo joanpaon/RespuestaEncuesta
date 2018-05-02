@@ -15,6 +15,8 @@
  */
 package org.japo.java.libraries;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import java.awt.Image;
@@ -26,7 +28,9 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -35,6 +39,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
+import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeListener;
 
@@ -45,14 +50,32 @@ import javax.swing.event.ChangeListener;
 public class UtilesSwing {
 
     // Perfiles LnF
-    public static final String LNF_GTK = "GTK";
-    public static final String LNF_WINDOWS = "Windows";
-    public static final String LNF_MOTIF = "Motif";
-    public static final String LNF_METAL = "Metal";
-    public static final String LNF_NIMBUS = "Nimbus";
+    public static final String LNF_WINDOWS_PROFILE = "Windows";
+    public static final String LNF_WINDOWS_CLASSIC_PROFILE = "Windows Classic";
+    public static final String LNF_MOTIF_PROFILE = "CDE/Motif";
+    public static final String LNF_GTK_PROFILE = "GTK+";    // Sólo en LINUX
+    public static final String LNF_METAL_PROFILE = "Metal";
+    public static final String LNF_NIMBUS_PROFILE = "Nimbus";
+
+    // Perfiles LnF - Extra
+    public static final String LNF_SYSTEM_PROFILE = "System";
+    public static final String LNF_CROSS_PLATFORM_PROFILE = "Cross Platform";
+
+    // Nombres de Clases LnF
+    public static final String LNF_WINDOWS = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
+    public static final String LNF_WINDOWS_CLASSIC = "com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel";
+    public static final String LNF_MOTIF = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
+    public static final String LNF_GTK = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";  // LINUX
+    public static final String LNF_METAL = "javax.swing.plaf.metal.MetalLookAndFeel";
+    public static final String LNF_NIMBUS = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
+
+    // Fuente Predeterminada
+    public static final String DEF_FONT_FAMILY = Font.SANS_SERIF;
+    public static final int DEF_FONT_STYLE = Font.PLAIN;
+    public static final int DEF_FONT_SIZE = 12;
 
     // Cerrar programa
-    public static void terminarPrograma(JFrame f) {
+    public static final void terminarPrograma(JFrame f) {
         // Oculta la ventana
         f.setVisible(false);
 
@@ -63,33 +86,102 @@ public class UtilesSwing {
         System.exit(0);
     }
 
-    // Establecer LnF
-    public static boolean establecerLnF(String lnf) {
-        // Semáforo
-        boolean procesoOK = false;
+    // Lista de Nombres de los LnF Instalados
+    public static final String[] obtenerNombresLnFInstalados() {
+        // Lista Info LnF Instalados
+        UIManager.LookAndFeelInfo[] lnfInfo = UIManager.getInstalledLookAndFeels();
 
-        // Instala LnF
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if (lnf.equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
+        // Lista Nombres LnF Instalados
+        String[] lnfName = new String[lnfInfo.length];
 
-            // Actualiza semáforo
-            procesoOK = true;
-        } catch (ClassNotFoundException | IllegalAccessException
-                | InstantiationException | UnsupportedLookAndFeelException e) {
-            System.out.println("ERROR: Instalación del LnF");
+        // Extrae Nombres LnF Instalados
+        for (int i = 0; i < lnfInfo.length; i++) {
+            lnfName[i] = lnfInfo[i].getName();
         }
 
-        // Devuelve semáforo
-        return procesoOK;
+        // Devuelve Nombres LnF Instalados
+        return lnfName;
+    }
+
+    // Lista de Nombres de las Clases de los LnF Instalados
+    public static final String[] obtenerNombresClasesLnFInstalados() {
+        // Lista Info LnF Instalados
+        UIManager.LookAndFeelInfo[] lnfInfo = UIManager.getInstalledLookAndFeels();
+
+        // Lista Nombres de las clases LnF Instalados
+        String[] lnfClassName = new String[lnfInfo.length];
+
+        // Extrae Nombres de las clases LnF Instalados
+        for (int i = 0; i < lnfInfo.length; i++) {
+            lnfClassName[i] = lnfInfo[i].getClassName();
+        }
+
+        // Devuelve Nombres de las clases LnF Instalados
+        return lnfClassName;
+    }
+
+    // Establecer LnF - Nombre de Clase
+    public static final void establecerLnF(String lnfClass) {
+        try {
+            javax.swing.UIManager.setLookAndFeel(lnfClass);
+        } catch (ClassNotFoundException | IllegalAccessException
+                | InstantiationException | UnsupportedLookAndFeelException e) {
+            System.out.println("ERROR: Instalación del LnF - Clase");
+        }
+    }
+
+    // Establecer LnF - Nombre de Perfil
+    public static final void establecerLnFProfile(String lnfProfile) {
+        if (lnfProfile.equals(LNF_SYSTEM_PROFILE)) {
+            establecerLnFSistema();
+        } else if (lnfProfile.equals(LNF_CROSS_PLATFORM_PROFILE)) {
+            establecerLnFCrossPlatform();
+        } else {
+            try {
+                for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                    if (lnfProfile.equals(info.getName())) {
+                        UIManager.setLookAndFeel(info.getClassName());
+                    }
+                }
+            } catch (ClassNotFoundException | IllegalAccessException
+                    | InstantiationException | UnsupportedLookAndFeelException e) {
+                System.out.println("ERROR: Instalación del LnF - Perfil");
+            }
+        }
+    }
+
+    // Obtener Nombre LnF Sistema
+    public static final String obtenerNombreLnFSistema() {
+        return UIManager.getSystemLookAndFeelClassName();
+    }
+
+    // Establecer LnF Sistema
+    public static final void establecerLnFSistema() {
+        try {
+            javax.swing.UIManager.setLookAndFeel(obtenerNombreLnFSistema());
+        } catch (ClassNotFoundException | IllegalAccessException
+                | InstantiationException | UnsupportedLookAndFeelException e) {
+            System.out.println("ERROR: Instalación del LnF del Sistema");
+        }
+    }
+
+    // Obtener Nombre LnF Sistema
+    public static final String obtenerNombreLnFCrossPlatform() {
+        return UIManager.getCrossPlatformLookAndFeelClassName();
+    }
+
+    // Establecer LnF Cross-Platform
+    public static final void establecerLnFCrossPlatform() {
+        try {
+            javax.swing.UIManager.setLookAndFeel(obtenerNombreLnFCrossPlatform());
+        } catch (ClassNotFoundException | IllegalAccessException
+                | InstantiationException | UnsupportedLookAndFeelException e) {
+            System.out.println("ERROR: Instalación del LnF Cross Platform");
+        }
     }
 
     // Escalar/Asignar Image > Etiqueta
-    public static boolean asignarImagenEscalada(JLabel lblImagen, Image imgOriginal) {
+    public static final boolean asignarImagenEscalada(JLabel lblImagen, Image imgOriginal) {
         // Semáforo
         boolean procesoOK = false;
 
@@ -118,7 +210,7 @@ public class UtilesSwing {
     }
 
     // Obtiene el texto copiado al portapapeles
-    public static String obtenerTextoPortapapeles() {
+    public static final String obtenerTextoPortapapeles() {
         // Referencia al texto del portapapeles
         String result = "";
 
@@ -141,7 +233,7 @@ public class UtilesSwing {
     }
 
     // Coloca texto en el portapapeles
-    public static boolean ponerTextoPortapapeles(String texto, ClipboardOwner propietario) {
+    public static final boolean ponerTextoPortapapeles(String texto, ClipboardOwner propietario) {
         // Semáforo
         boolean procesoOK = false;
 
@@ -166,7 +258,7 @@ public class UtilesSwing {
     }
 
     // Cambiar valor sin disparar Eventos de Ajuste
-    public static void ajustarValorDeslizador(JSlider sldActual, int valor) {
+    public static final void ajustarValorDeslizador(JSlider sldActual, int valor) {
         // Captura los escuchadores del deslizador
         ChangeListener[] lista = sldActual.getChangeListeners();
 
@@ -185,7 +277,7 @@ public class UtilesSwing {
     }
 
     // Cambiar valor sin disparar Eventos de Ajuste
-    public static void ajustarValorCambiador(JSpinner spnActual, int valor) {
+    public static final void ajustarValorCambiador(JSpinner spnActual, int valor) {
         // Captura los escuchadores del cambiador
         ChangeListener[] lista = spnActual.getChangeListeners();
 
@@ -204,13 +296,13 @@ public class UtilesSwing {
     }
 
     // Tipografias disponibles en el sistema
-    public static String[] obtenerTipografiasSistema() {
+    public static final String[] obtenerTipografiasSistema() {
         return GraphicsEnvironment.
                 getLocalGraphicsEnvironment().
                 getAvailableFontFamilyNames();
     }
 
-    public static void seleccionarElementoCombo(JComboBox<String> cbbActual, String item) {
+    public static final void seleccionarElementoCombo(JComboBox<String> cbbActual, String item) {
         // Captura los escuchadores del combo
         ActionListener[] lista = cbbActual.getActionListeners();
 
@@ -229,7 +321,7 @@ public class UtilesSwing {
     }
 
     // Asignar Favicon Ventana
-    public static void establecerFavicon(JFrame ventana, String rutaFavicon) {
+    public static final void establecerFavicon(JFrame ventana, String rutaFavicon) {
         try {
             // Ruta Favicon > URL Favicon
             URL urlICN = ClassLoader.getSystemResource(rutaFavicon);
@@ -239,5 +331,39 @@ public class UtilesSwing {
         } catch (Exception e) {
             System.out.println("ERROR: Instalación del icono de la ventana");
         }
+    }
+
+    // Importar Fuente TTF - Fichero
+    public static final Font importarFuente(String fichero) {
+        // Referencia a la fuente
+        Font f;
+
+        // Cargar Fuente
+        try (InputStream is = new FileInputStream(fichero)) {
+            f = Font.createFont(Font.TRUETYPE_FONT, is).
+                    deriveFont(DEF_FONT_STYLE, DEF_FONT_SIZE);
+        } catch (FontFormatException | IOException e) {
+            f = new Font(DEF_FONT_FAMILY, DEF_FONT_STYLE, DEF_FONT_SIZE);
+        }
+
+        // Devuelve fuente
+        return f;
+    }
+
+    // Importar Fuente TTF - Recurso
+    public static final Font importarFuenteRecurso(String recurso) {
+        // Referencia a la fuente
+        Font f;
+
+        // Cargar Fuente
+        try (InputStream is = ClassLoader.getSystemResourceAsStream(recurso)) {
+            f = Font.createFont(Font.TRUETYPE_FONT, is).
+                    deriveFont(DEF_FONT_STYLE, DEF_FONT_SIZE);
+        } catch (FontFormatException | IOException e) {
+            f = new Font(DEF_FONT_FAMILY, DEF_FONT_STYLE, DEF_FONT_SIZE);
+        }
+
+        // Devuelve fuente
+        return f;
     }
 }
