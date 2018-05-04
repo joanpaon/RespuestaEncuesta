@@ -16,7 +16,6 @@
 package org.japo.java.forms;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagLayout;
@@ -27,13 +26,11 @@ import java.util.Properties;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import org.japo.java.events.AEM;
@@ -73,11 +70,15 @@ public class GUI extends JFrame {
 
     // Referencias
     private Properties prp;
-    private JLabel lblPregunta;
+    private JLabel lblQuery;
     private JRadioButton rbtYes;
     private JRadioButton rbtNot;
     private JRadioButton rbtMay;
-    private JLabel lblImagen;
+    private JLabel lblOut;
+
+    // Tamaño Imagen Salida
+    private int ancImgOut;
+    private int altImgOut;
 
     // Constructor
     public GUI(Properties prp) {
@@ -94,11 +95,11 @@ public class GUI extends JFrame {
     // Construcción del IGU
     private void initComponents() {
         // Etiqueta Pregunta
-        lblPregunta = new JLabel(prp.getProperty(PRP_QUESTION, DEF_QUESTION));
-        lblPregunta.setFont(UtilesSwing.importarFuenteRecurso(
+        lblQuery = new JLabel(prp.getProperty(PRP_QUESTION, DEF_QUESTION));
+        lblQuery.setFont(UtilesSwing.importarFuenteRecurso(
                 prp.getProperty(PRP_FONT1_RESOURCE, DEF_FONT1_RESOURCE)).
                 deriveFont(Font.PLAIN, 24f));
-        lblPregunta.setHorizontalAlignment(JLabel.CENTER);
+        lblQuery.setHorizontalAlignment(JLabel.CENTER);
 
         // Opción SI
         rbtYes = new JRadioButton("Seguramente");
@@ -130,8 +131,18 @@ public class GUI extends JFrame {
         bg.add(rbtNot);
         bg.add(rbtMay);
 
-        // Etiqueta con imagen
-        lblImagen = new JLabel();
+        // Tamaño Imagen Respuesta
+        ancImgOut = Integer.parseInt(prp.getProperty(PRP_IMAGE_WIDTH, DEF_IMAGE_WIDTH));
+        altImgOut = Integer.parseInt(prp.getProperty(PRP_IMAGE_HEIGHT, DEF_IMAGE_HEIGHT));
+
+        // Imagen Respuesta
+        String prpImgOut = prp.getProperty(PRP_IMAGE_MAY_RESOURCE, DEF_IMAGE_MAY_RESOURCE);
+        URL urlImgOut = ClassLoader.getSystemResource(prpImgOut);
+        Image imgOutIni = new ImageIcon(urlImgOut).getImage();
+        Image imgOutFin = imgOutIni.getScaledInstance(ancImgOut, altImgOut, Image.SCALE_FAST);
+
+        // Etiqueta Imagen Respuesta
+        lblOut = new JLabel(new ImageIcon(imgOutFin));
 
         // Borde Panel Pregunta
         TitledBorder brdPregunta = new TitledBorder("Pregunta");
@@ -144,7 +155,7 @@ public class GUI extends JFrame {
         pnlPregunta.setPreferredSize(new Dimension(0, 100));
         pnlPregunta.setBorder(brdPregunta);
         pnlPregunta.setLayout(new GridBagLayout());
-        pnlPregunta.add(lblPregunta);
+        pnlPregunta.add(lblQuery);
 
         // Borde Panel Opciones
         TitledBorder brdOpciones = new TitledBorder("Opciones");
@@ -163,31 +174,28 @@ public class GUI extends JFrame {
         pnlOpciones.add(rbtMay);
         pnlOpciones.add(Box.createHorizontalStrut(50));
 
-        // Borde Panel Imágen
-        TitledBorder brdImagen = new TitledBorder("Imagen");
-        brdImagen.setTitleFont(UtilesSwing.importarFuenteRecurso(
+        // Borde Panel Respuesta
+        TitledBorder brdOut = new TitledBorder("Respuesta");
+        brdOut.setTitleFont(UtilesSwing.importarFuenteRecurso(
                 prp.getProperty(PRP_FONT2_RESOURCE, DEF_FONT2_RESOURCE)).
                 deriveFont(Font.BOLD, 18f));
-        
-        // Panel Imagen
-        JPanel pnlImagen = new JPanel();
-        pnlImagen.setPreferredSize(new Dimension(170, 0));
-        pnlImagen.setBorder(brdImagen);
-        pnlImagen.setLayout(new GridBagLayout());
-        pnlImagen.add(lblImagen);
+
+        // Panel Respuesta
+        JPanel pnlOut = new JPanel(new GridBagLayout());
+        pnlOut.setPreferredSize(new Dimension(170, 0));
+        pnlOut.setBorder(brdOut);
+        pnlOut.add(lblOut);
 
         // Panel Principal
-        JPanel pnlPpal = new JPanel();
-        pnlPpal.setLayout(new BorderLayout(5, 5));
+        JPanel pnlPpal = new JPanel(new BorderLayout(5, 5));
         pnlPpal.setBorder(new EmptyBorder(10, 10, 10, 10));
         pnlPpal.add(pnlPregunta, BorderLayout.NORTH);
-        pnlPpal.add(pnlImagen, BorderLayout.EAST);
+        pnlPpal.add(pnlOut, BorderLayout.EAST);
         pnlPpal.add(pnlOpciones, BorderLayout.CENTER);
 
         // Ventana principal
         setContentPane(pnlPpal);
         setTitle("Swing Manual #09");
-//        setResizable(false);
         setSize(500, 300);
         setMinimumSize(new Dimension(500, 300));
         setLocationRelativeTo(null);
@@ -215,39 +223,25 @@ public class GUI extends JFrame {
     }
 
     public void procesarEncuesta(ActionEvent ae) {
-        try {
-            // Ruta Imagen
-            String ruta;
+        // Recurso Imagen
+        String recurso;
 
-            // Selección Ruta Imagen
-            if (ae.getSource().equals(rbtYes)) {
-                ruta = prp.getProperty(PRP_IMAGE_YES_RESOURCE, DEF_IMAGE_YES_RESOURCE);
-            } else if (ae.getSource().equals(rbtNot)) {
-                ruta = prp.getProperty(PRP_IMAGE_NOT_RESOURCE, DEF_IMAGE_NOT_RESOURCE);
-            } else {
-                ruta = prp.getProperty(PRP_IMAGE_MAY_RESOURCE, DEF_IMAGE_MAY_RESOURCE);
-            }
-
-            // Ruta > URL
-            URL url = ClassLoader.getSystemResource(ruta);
-
-            // URL > Image (Inicial)
-            Image imgIni = new ImageIcon(url).getImage();
-
-            // Tamaño Reescalado
-            int ancho = Integer.parseInt(prp.getProperty(PRP_IMAGE_WIDTH, DEF_IMAGE_WIDTH));
-            int alto = Integer.parseInt(prp.getProperty(PRP_IMAGE_HEIGHT, DEF_IMAGE_HEIGHT));
-
-            // Image (Inicial) + Rescalado > Image (Final)
-            Image imgFin = imgIni.getScaledInstance(ancho, alto, Image.SCALE_FAST);
-
-            // Image (Final) > Icon
-            Icon i = new ImageIcon(imgFin);
-
-            // Icon > Etiqueta Imagen
-            lblImagen.setIcon(i);
-        } catch (NumberFormatException e) {
-            System.out.println(e);
+        // Selección Recurso Imagen
+        if (ae.getSource().equals(rbtYes)) {
+            recurso = prp.getProperty(PRP_IMAGE_YES_RESOURCE, DEF_IMAGE_YES_RESOURCE);
+        } else if (ae.getSource().equals(rbtNot)) {
+            recurso = prp.getProperty(PRP_IMAGE_NOT_RESOURCE, DEF_IMAGE_NOT_RESOURCE);
+        } else {
+            recurso = prp.getProperty(PRP_IMAGE_MAY_RESOURCE, DEF_IMAGE_MAY_RESOURCE);
         }
+
+        // Recurso >> URL
+        URL urlRecurso = ClassLoader.getSystemResource(recurso);
+
+        // URL >> Image
+        Image imgRecurso = new ImageIcon(urlRecurso).getImage();
+
+        // Image >> JLabel
+        UtilesSwing.escalarImagenEtiqueta(lblOut, imgRecurso, ancImgOut, altImgOut);
     }
 }

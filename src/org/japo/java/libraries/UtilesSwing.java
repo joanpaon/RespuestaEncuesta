@@ -62,12 +62,12 @@ public class UtilesSwing {
     public static final String LNF_CROSS_PLATFORM_PROFILE = "Cross Platform";
 
     // Nombres de Clases LnF
-    public static final String LNF_WINDOWS = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
-    public static final String LNF_WINDOWS_CLASSIC = "com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel";
-    public static final String LNF_MOTIF = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
-    public static final String LNF_GTK = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";  // LINUX
-    public static final String LNF_METAL = "javax.swing.plaf.metal.MetalLookAndFeel";
-    public static final String LNF_NIMBUS = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
+    public static final String LNF_WINDOWS_CLASS = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
+    public static final String LNF_WINDOWS_CLASSIC_CLASS = "com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel";
+    public static final String LNF_MOTIF_CLASS = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
+    public static final String LNF_GTK_CLASS = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";  // LINUX
+    public static final String LNF_METAL_CLASS = "javax.swing.plaf.metal.MetalLookAndFeel";
+    public static final String LNF_NIMBUS_CLASS = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
 
     // Fuente Predeterminada
     public static final String DEF_FONT_FAMILY = Font.SANS_SERIF;
@@ -121,9 +121,9 @@ public class UtilesSwing {
     }
 
     // Establecer LnF - Nombre de Clase
-    public static final void establecerLnF(String lnfClass) {
+    public static final void establecerLnFClassName(String lnfClass) {
         try {
-            javax.swing.UIManager.setLookAndFeel(lnfClass);
+            UIManager.setLookAndFeel(lnfClass);
         } catch (ClassNotFoundException | IllegalAccessException
                 | InstantiationException | UnsupportedLookAndFeelException e) {
             System.out.println("ERROR: Instalación del LnF - Clase");
@@ -132,14 +132,14 @@ public class UtilesSwing {
 
     // Establecer LnF - Nombre de Perfil
     public static final void establecerLnFProfile(String lnfProfile) {
-        if (lnfProfile.equals(LNF_SYSTEM_PROFILE)) {
+        if (lnfProfile.equalsIgnoreCase(LNF_SYSTEM_PROFILE)) {
             establecerLnFSistema();
-        } else if (lnfProfile.equals(LNF_CROSS_PLATFORM_PROFILE)) {
+        } else if (lnfProfile.equalsIgnoreCase(LNF_CROSS_PLATFORM_PROFILE)) {
             establecerLnFCrossPlatform();
         } else {
             try {
                 for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                    if (lnfProfile.equals(info.getName())) {
+                    if (lnfProfile.equalsIgnoreCase(info.getName())) {
                         UIManager.setLookAndFeel(info.getClassName());
                     }
                 }
@@ -158,7 +158,7 @@ public class UtilesSwing {
     // Establecer LnF Sistema
     public static final void establecerLnFSistema() {
         try {
-            javax.swing.UIManager.setLookAndFeel(obtenerNombreLnFSistema());
+            UIManager.setLookAndFeel(obtenerNombreLnFSistema());
         } catch (ClassNotFoundException | IllegalAccessException
                 | InstantiationException | UnsupportedLookAndFeelException e) {
             System.out.println("ERROR: Instalación del LnF del Sistema");
@@ -173,7 +173,7 @@ public class UtilesSwing {
     // Establecer LnF Cross-Platform
     public static final void establecerLnFCrossPlatform() {
         try {
-            javax.swing.UIManager.setLookAndFeel(obtenerNombreLnFCrossPlatform());
+            UIManager.setLookAndFeel(obtenerNombreLnFCrossPlatform());
         } catch (ClassNotFoundException | IllegalAccessException
                 | InstantiationException | UnsupportedLookAndFeelException e) {
             System.out.println("ERROR: Instalación del LnF Cross Platform");
@@ -181,36 +181,36 @@ public class UtilesSwing {
     }
 
     // Escalar/Asignar Image > Etiqueta
-    public static final boolean asignarImagenEscalada(JLabel lblImagen, Image imgOriginal) {
-        // Semáforo
-        boolean procesoOK = false;
-
-        // Procesado Imagen
+    public static final void adaptarImagenEtiqueta(JLabel lblAct, Image imgIni) {
         try {
-            // Obtiene la imagen escalada
-            Image imgEscalada = imgOriginal.getScaledInstance(
-                    lblImagen.getSize().width,
-                    lblImagen.getSize().height,
+            // Imagen Original >> Imagen Escalada 
+            Image imgFin = imgIni.getScaledInstance(
+                    lblAct.getSize().width,
+                    lblAct.getSize().height,
                     Image.SCALE_FAST);
 
-            // Image (Final) > Icon
-            Icon i = new ImageIcon(imgEscalada);
-
             // Icon > Etiqueta Imagen
-            lblImagen.setIcon(i);
-
-            // Actualiza semáforo
-            procesoOK = true;
+            lblAct.setIcon(new ImageIcon(imgFin));
         } catch (Exception e) {
             System.out.println("ERROR: Reescalar/Asignar imagen a etiqueta");
         }
-
-        // Devuelve semáforo
-        return procesoOK;
     }
 
-    // Obtiene el texto copiado al portapapeles
-    public static final String obtenerTextoPortapapeles() {
+    // Escalar Image > Etiqueta
+    public static void escalarImagenEtiqueta(JLabel lblAct, Image imgIni, int ancAct, int altAct) {
+        try {
+            // Imagen Original >> Imagen Escalada 
+            Image imgFin = imgIni.getScaledInstance(ancAct, altAct, Image.SCALE_FAST);
+
+            // Icon > Etiqueta Imagen
+            lblAct.setIcon(new ImageIcon(imgFin));
+        } catch (Exception e) {
+            System.out.println("ERROR: No se ha podido adaptar imagen a etiqueta");
+        }
+    }
+
+    // Portapapeles >> Texto
+    public static final String importarTextoPortapapeles() {
         // Referencia al texto del portapapeles
         String result = "";
 
@@ -232,8 +232,8 @@ public class UtilesSwing {
         return result;
     }
 
-    // Coloca texto en el portapapeles
-    public static final boolean ponerTextoPortapapeles(String texto, ClipboardOwner propietario) {
+    // Texto >> Portapapeles
+    public static final boolean exportarTextoPortapapeles(String texto, ClipboardOwner propietario) {
         // Semáforo
         boolean procesoOK = false;
 
@@ -258,7 +258,7 @@ public class UtilesSwing {
     }
 
     // Cambiar valor sin disparar Eventos de Ajuste
-    public static final void ajustarValorDeslizador(JSlider sldActual, int valor) {
+    public static final void establecerValorDeslizador(JSlider sldActual, int valor) {
         // Captura los escuchadores del deslizador
         ChangeListener[] lista = sldActual.getChangeListeners();
 
@@ -277,7 +277,7 @@ public class UtilesSwing {
     }
 
     // Cambiar valor sin disparar Eventos de Ajuste
-    public static final void ajustarValorCambiador(JSpinner spnActual, int valor) {
+    public static final void establecerValorCambiador(JSpinner spnActual, int valor) {
         // Captura los escuchadores del cambiador
         ChangeListener[] lista = spnActual.getChangeListeners();
 
@@ -302,7 +302,7 @@ public class UtilesSwing {
                 getAvailableFontFamilyNames();
     }
 
-    public static final void seleccionarElementoCombo(JComboBox<String> cbbActual, String item) {
+    public static final void establecerElementoCombo(JComboBox<String> cbbActual, String item) {
         // Captura los escuchadores del combo
         ActionListener[] lista = cbbActual.getActionListeners();
 
@@ -334,7 +334,7 @@ public class UtilesSwing {
     }
 
     // Importar Fuente TTF - Fichero
-    public static final Font importarFuente(String fichero) {
+    public static final Font importarFuenteFichero(String fichero) {
         // Referencia a la fuente
         Font f;
 
