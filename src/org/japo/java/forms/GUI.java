@@ -70,11 +70,11 @@ public class GUI extends JFrame {
 
     // Referencias
     private Properties prp;
-    private JLabel lblQuery;
+    private JLabel lblPregunta;
     private JRadioButton rbtYes;
     private JRadioButton rbtNot;
     private JRadioButton rbtMay;
-    private JLabel lblOut;
+    private JLabel lblRespuesta;
 
     // Tamaño Imagen Salida
     private int ancImgOut;
@@ -95,11 +95,11 @@ public class GUI extends JFrame {
     // Construcción del IGU
     private void initComponents() {
         // Etiqueta Pregunta
-        lblQuery = new JLabel(prp.getProperty(PRP_QUESTION, DEF_QUESTION));
-        lblQuery.setFont(UtilesSwing.importarFuenteRecurso(
+        lblPregunta = new JLabel(prp.getProperty(PRP_QUESTION, DEF_QUESTION));
+        lblPregunta.setFont(UtilesSwing.importarFuenteRecurso(
                 prp.getProperty(PRP_FONT1_RESOURCE, DEF_FONT1_RESOURCE)).
                 deriveFont(Font.PLAIN, 24f));
-        lblQuery.setHorizontalAlignment(JLabel.CENTER);
+        lblPregunta.setHorizontalAlignment(JLabel.CENTER);
 
         // Opción SI
         rbtYes = new JRadioButton("Seguramente");
@@ -142,7 +142,7 @@ public class GUI extends JFrame {
         Image imgOutFin = imgOutIni.getScaledInstance(ancImgOut, altImgOut, Image.SCALE_FAST);
 
         // Etiqueta Imagen Respuesta
-        lblOut = new JLabel(new ImageIcon(imgOutFin));
+        lblRespuesta = new JLabel(new ImageIcon(imgOutFin));
 
         // Borde Panel Pregunta
         TitledBorder brdPregunta = new TitledBorder("Pregunta");
@@ -155,7 +155,7 @@ public class GUI extends JFrame {
         pnlPregunta.setPreferredSize(new Dimension(0, 100));
         pnlPregunta.setBorder(brdPregunta);
         pnlPregunta.setLayout(new GridBagLayout());
-        pnlPregunta.add(lblQuery);
+        pnlPregunta.add(lblPregunta);
 
         // Borde Panel Opciones
         TitledBorder brdOpciones = new TitledBorder("Opciones");
@@ -175,22 +175,22 @@ public class GUI extends JFrame {
         pnlOpciones.add(Box.createHorizontalStrut(50));
 
         // Borde Panel Respuesta
-        TitledBorder brdOut = new TitledBorder("Respuesta");
-        brdOut.setTitleFont(UtilesSwing.importarFuenteRecurso(
+        TitledBorder brdRespuesta = new TitledBorder("Respuesta");
+        brdRespuesta.setTitleFont(UtilesSwing.importarFuenteRecurso(
                 prp.getProperty(PRP_FONT2_RESOURCE, DEF_FONT2_RESOURCE)).
                 deriveFont(Font.BOLD, 18f));
 
         // Panel Respuesta
-        JPanel pnlOut = new JPanel(new GridBagLayout());
-        pnlOut.setPreferredSize(new Dimension(170, 0));
-        pnlOut.setBorder(brdOut);
-        pnlOut.add(lblOut);
+        JPanel pnlRespuesta = new JPanel(new GridBagLayout());
+        pnlRespuesta.setPreferredSize(new Dimension(170, 0));
+        pnlRespuesta.setBorder(brdRespuesta);
+        pnlRespuesta.add(lblRespuesta);
 
         // Panel Principal
         JPanel pnlPpal = new JPanel(new BorderLayout(5, 5));
         pnlPpal.setBorder(new EmptyBorder(10, 10, 10, 10));
         pnlPpal.add(pnlPregunta, BorderLayout.NORTH);
-        pnlPpal.add(pnlOut, BorderLayout.EAST);
+        pnlPpal.add(pnlRespuesta, BorderLayout.EAST);
         pnlPpal.add(pnlOpciones, BorderLayout.CENTER);
 
         // Ventana principal
@@ -242,6 +242,6 @@ public class GUI extends JFrame {
         Image imgRecurso = new ImageIcon(urlRecurso).getImage();
 
         // Image >> JLabel
-        UtilesSwing.escalarImagenEtiqueta(lblOut, imgRecurso, ancImgOut, altImgOut);
+        UtilesSwing.escalarImagenEtiqueta(lblRespuesta, imgRecurso, ancImgOut, altImgOut);
     }
 }

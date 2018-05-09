@@ -32,7 +32,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -197,7 +196,7 @@ public class UtilesSwing {
     }
 
     // Escalar Image > Etiqueta
-    public static void escalarImagenEtiqueta(JLabel lblAct, Image imgIni, int ancAct, int altAct) {
+    public static final void escalarImagenEtiqueta(JLabel lblAct, Image imgIni, int ancAct, int altAct) {
         try {
             // Imagen Original >> Imagen Escalada 
             Image imgFin = imgIni.getScaledInstance(ancAct, altAct, Image.SCALE_FAST);
