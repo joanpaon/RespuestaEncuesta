@@ -196,7 +196,7 @@ public class UtilesSwing {
     }
 
     // Escalar Image > Etiqueta
-    public static void escalarImagenEtiqueta(JLabel lblAct, Image imgIni, int ancAct, int altAct) {
+    public static final void escalarImagenEtiqueta(JLabel lblAct, Image imgIni, int ancAct, int altAct) {
         try {
             // Imagen Original >> Imagen Escalada 
             Image imgFin = imgIni.getScaledInstance(ancAct, altAct, Image.SCALE_FAST);
