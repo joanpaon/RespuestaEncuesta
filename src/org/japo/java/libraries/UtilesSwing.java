@@ -32,7 +32,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -62,12 +61,12 @@ public class UtilesSwing {
     public static final String LNF_CROSS_PLATFORM_PROFILE = "Cross Platform";
 
     // Nombres de Clases LnF
-    public static final String LNF_WINDOWS_CLASS = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
-    public static final String LNF_WINDOWS_CLASSIC_CLASS = "com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel";
-    public static final String LNF_MOTIF_CLASS = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
-    public static final String LNF_GTK_CLASS = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";  // LINUX
-    public static final String LNF_METAL_CLASS = "javax.swing.plaf.metal.MetalLookAndFeel";
-    public static final String LNF_NIMBUS_CLASS = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
+    public static final String LNF_WINDOWS_CLASSNAME = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
+    public static final String LNF_WINDOWS_CLASSIC_CLASSNAME = "com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel";
+    public static final String LNF_MOTIF_CLASSNAME = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
+    public static final String LNF_GTK_CLASSNAME = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";  // LINUX
+    public static final String LNF_METAL_CLASSNAME = "javax.swing.plaf.metal.MetalLookAndFeel";
+    public static final String LNF_NIMBUS_CLASSNAME = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
 
     // Fuente Predeterminada
     public static final String DEF_FONT_FAMILY = Font.SANS_SERIF;
@@ -121,9 +120,9 @@ public class UtilesSwing {
     }
 
     // Establecer LnF - Nombre de Clase
-    public static final void establecerLnFClassName(String lnfClass) {
+    public static final void establecerLnFClassName(String lnfClassName) {
         try {
-            UIManager.setLookAndFeel(lnfClass);
+            UIManager.setLookAndFeel(lnfClassName);
         } catch (ClassNotFoundException | IllegalAccessException
                 | InstantiationException | UnsupportedLookAndFeelException e) {
             System.out.println("ERROR: Instalación del LnF - Clase");
@@ -180,7 +179,7 @@ public class UtilesSwing {
         }
     }
 
-    // Escalar/Asignar Image > Etiqueta
+    // Adaptar Image >> Etiqueta
     public static final void adaptarImagenEtiqueta(JLabel lblAct, Image imgIni) {
         try {
             // Imagen Original >> Imagen Escalada 
@@ -189,7 +188,7 @@ public class UtilesSwing {
                     lblAct.getSize().height,
                     Image.SCALE_FAST);
 
-            // Icon > Etiqueta Imagen
+            // Icon >> Etiqueta Imagen
             lblAct.setIcon(new ImageIcon(imgFin));
         } catch (Exception e) {
             System.out.println("ERROR: Reescalar/Asignar imagen a etiqueta");
