@@ -1,5 +1,5 @@
 /* 
- * Copyright 2017 José A. Pacheco Ondoño - joanpaon@gmail.com.
+ * Copyright 2019 José A. Pacheco Ondoño - joanpaon@gmail.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package org.japo.java.libraries;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
@@ -38,6 +39,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeListener;
@@ -46,7 +48,7 @@ import javax.swing.event.ChangeListener;
  *
  * @author José A. Pacheco Ondoño - joanpaon@gmail.com
  */
-public class UtilesSwing {
+public final class UtilesSwing {
 
     // Perfiles LnF
     public static final String LNF_WINDOWS_PROFILE = "Windows";
@@ -73,7 +75,7 @@ public class UtilesSwing {
     public static final int DEF_FONT_STYLE = Font.PLAIN;
     public static final int DEF_FONT_SIZE = 12;
 
-    // Cerrar programa
+    // Cerrar Programa Swing
     public static final void terminarPrograma(JFrame f) {
         // Oculta la ventana
         f.setVisible(false);
@@ -130,15 +132,15 @@ public class UtilesSwing {
     }
 
     // Establecer LnF - Nombre de Perfil
-    public static final void establecerLnFProfile(String lnfProfile) {
-        if (lnfProfile.equalsIgnoreCase(LNF_SYSTEM_PROFILE)) {
+    public static final void establecerLnFProfile(String profile) {
+        if (profile.equalsIgnoreCase(LNF_SYSTEM_PROFILE)) {
             establecerLnFSistema();
-        } else if (lnfProfile.equalsIgnoreCase(LNF_CROSS_PLATFORM_PROFILE)) {
+        } else if (profile.equalsIgnoreCase(LNF_CROSS_PLATFORM_PROFILE)) {
             establecerLnFCrossPlatform();
         } else {
             try {
                 for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                    if (lnfProfile.equalsIgnoreCase(info.getName())) {
+                    if (profile.equalsIgnoreCase(info.getName())) {
                         UIManager.setLookAndFeel(info.getClassName());
                     }
                 }
@@ -196,7 +198,7 @@ public class UtilesSwing {
     }
 
     // Escalar Image > Etiqueta
-    public static final void escalarImagenEtiqueta(JLabel lblAct, Image imgIni, int ancAct, int altAct) {
+    public static void escalarImagenEtiqueta(JLabel lblAct, Image imgIni, int ancAct, int altAct) {
         try {
             // Imagen Original >> Imagen Escalada 
             Image imgFin = imgIni.getScaledInstance(ancAct, altAct, Image.SCALE_FAST);
@@ -301,6 +303,7 @@ public class UtilesSwing {
                 getAvailableFontFamilyNames();
     }
 
+    // Selecciona Elemento Combo por Programa sin activar Listeners
     public static final void establecerElementoCombo(JComboBox<String> cbbActual, String item) {
         // Captura los escuchadores del combo
         ActionListener[] lista = cbbActual.getActionListeners();
@@ -320,15 +323,15 @@ public class UtilesSwing {
     }
 
     // Asignar Favicon Ventana
-    public static final void establecerFavicon(JFrame ventana, String rutaFavicon) {
+    public static final void establecerFavicon(JFrame ventana, String recurso) {
         try {
             // Ruta Favicon > URL Favicon
-            URL urlICN = ClassLoader.getSystemResource(rutaFavicon);
+            URL urlICN = ClassLoader.getSystemResource(recurso);
 
             // URL Favicon > Ventana Favicon
             ventana.setIconImage(new ImageIcon(urlICN).getImage());
         } catch (Exception e) {
-            System.out.println("ERROR: Instalación del icono de la ventana");
+            System.out.println("ERROR: Favicon no instalado");
         }
     }
 
@@ -364,5 +367,73 @@ public class UtilesSwing {
 
         // Devuelve fuente
         return f;
+    }
+
+    // Campo de texto con DATO + ExpReg + Texto campo vacío
+    public static final boolean validarCampo(
+            JTextField txfActual, String expReg, String textoCampoVacio) {
+        // Texto del campo - No espaciadores
+        String textoActual = txfActual.getText().trim();
+
+        // Comprueba campo vacío
+        textoActual = textoActual.equals("") ? textoCampoVacio : textoActual;
+
+        // Restaura el texto formateado
+        txfActual.setText(textoActual);
+
+        // Valida el Dato
+        boolean validacionOK = UtilesValidacion.validar(textoActual, expReg);
+
+        // Señala la validación
+        if (validacionOK) {
+            // Señalar Contenido Correcto
+            txfActual.setForeground(Color.BLACK);
+        } else {
+            // Señalar Contenido Erróneo
+            txfActual.setForeground(Color.RED);
+        }
+
+        // Resultado de la validación
+        return validacionOK;
+    }
+
+    // Campo de texto con DATO + Lista + Texto campo vacío
+    public static final boolean validarCampo(
+            JTextField txfActual, String[] lista, String textoCampoVacio) {
+        // Texto del campo - No espaciadores
+        String texto = txfActual.getText().trim();
+
+        // Comprueba campo vacío
+        texto = texto.equals("") ? textoCampoVacio : texto;
+
+        // Restaura el texto formateado
+        txfActual.setText(texto);
+
+        // Valida el Dato
+        boolean validacionOK = UtilesValidacion.validar(texto, lista);
+
+        // Señala la validación
+        if (validacionOK) {
+            // Señalar Contenido Correcto
+            txfActual.setForeground(Color.BLACK);
+        } else {
+            // Señalar Contenido Erróneo
+            txfActual.setForeground(Color.RED);
+        }
+
+        // Resultado de la validación
+        return validacionOK;
+    }
+
+    // Campo de texto con DNI + Texto campo vacío
+    public static final boolean validarCampoDNI(
+            JTextField txfActual, String textoCampoVacio) {
+        return validarCampo(txfActual, UtilesDNI.ER_DNI, textoCampoVacio);
+    }
+
+    // Campo de texto con FECHA + Texto campo vacío
+    public static final boolean validarCampoFecha(
+            JTextField txfActual, String textoCampoVacio) {
+        return validarCampo(txfActual, UtilesFecha.ER_FECHA, textoCampoVacio);
     }
 }
