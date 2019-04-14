@@ -43,37 +43,39 @@ import org.japo.java.libraries.UtilesSwing;
 public final class GUI extends JFrame {
 
     // Propiedades App
-    public static final String PRP_LOOK_AND_FEEL_PROFILE = "form_look_and_feel_profile";
-    public static final String PRP_FAVICON_RESOURCE = "form_favicon_resource";
-    public static final String PRP_FORM_TITLE = "form_title";
+    public static final String PRP_FAVICON_RESOURCE = "favicon_resource";
+    public static final String PRP_FONT_CONTROL_RESOURCE = "font_control_resource";
+    public static final String PRP_FONT_BORDER_RESOURCE = "font_border_resource";
     public static final String PRP_FORM_HEIGHT = "form_height";
     public static final String PRP_FORM_WIDTH = "form_width";
-    public static final String PRP_FORM_FONT1_RESOURCE = "form_font1_resource";
-    public static final String PRP_FORM_FONT2_RESOURCE = "form_font2_resource";
-    public static final String PRP_IMAGE_WIDTH = "image_width";
+    public static final String PRP_FORM_TITLE = "form_title";
     public static final String PRP_IMAGE_HEIGHT = "image_height";
-    public static final String PRP_QUESTION = "question";
+    public static final String PRP_IMAGE_WIDTH = "image_width";
     public static final String PRP_IMAGE_YES_RESOURCE = "image_yes_resource";
     public static final String PRP_IMAGE_NOT_RESOURCE = "image_not_resource";
     public static final String PRP_IMAGE_MAY_RESOURCE = "image_may_resource";
+    public static final String PRP_QUESTION = "question";
+    public static final String PRP_LOOK_AND_FEEL_PROFILE = "look_and_feel_profile";
 
     // Valores por Defecto
-    public static final String DEF_LOOK_AND_FEEL_PROFILE = UtilesSwing.LNF_WINDOWS_PROFILE;
     public static final String DEF_FAVICON_RESOURCE = "img/favicon.png";
-    public static final String DEF_FORM_TITLE = "Swing Manual App";
+    public static final String DEF_FONT_CONTROL_FALLBACK_NAME = Font.DIALOG;
+    public static final String DEF_FONT_CONTROL_SYSTEM_NAME = "Arial";
+    public static final String DEF_FONT_BORDER_FALLBACK_NAME = Font.DIALOG;
+    public static final String DEF_FONT_BORDER_SYSTEM_NAME = "Arial";
     public static final int DEF_FORM_HEIGHT = 300;
     public static final int DEF_FORM_WIDTH = 500;
-    public static final String DEF_FORM_FONT1_RESOURCE = "fonts/default_font1.ttf";
-    public static final String DEF_FORM_FONT2_RESOURCE = "fonts/default_font2.ttf";
+    public static final String DEF_FORM_TITLE = "Swing Manual App";
     public static final String DEF_IMAGE_WIDTH = "100";
     public static final String DEF_IMAGE_HEIGHT = "100";
-    public static final String DEF_QUESTION = "¿Cree Ud. que éste va a ser un buen año?";
     public static final String DEF_IMAGE_YES_RESOURCE = "img/yes.jpg";
     public static final String DEF_IMAGE_NOT_RESOURCE = "img/not.jpg";
     public static final String DEF_IMAGE_MAY_RESOURCE = "img/may.jpg";
+    public static final String DEF_QUESTION = "¿Cree Ud. que éste va a ser un buen año?";
+    public static final String DEF_LOOK_AND_FEEL_PROFILE = UtilesSwing.LNF_WINDOWS_PROFILE;
 
     // Referencias
-    private Properties prp;
+    private final Properties prp;
 
     // Componentes
     private JLabel lblPregunta;
@@ -89,6 +91,10 @@ public final class GUI extends JFrame {
     private JPanel pnlOpciones;
     private JPanel pnlRespuesta;
     private JPanel pnlPpal;
+
+    // Fuentes
+    private Font fntControl;
+    private Font fntBorder;
 
     // Tamaño Imagen Salida
     private int ancImgOut;
@@ -111,36 +117,38 @@ public final class GUI extends JFrame {
 
     // Construcción - GUI
     private void initComponents() {
+        // Fuentes
+        fntControl = UtilesSwing.generarFuenteRecurso(prp.getProperty(PRP_FONT_CONTROL_RESOURCE),
+                DEF_FONT_CONTROL_SYSTEM_NAME,
+                DEF_FONT_CONTROL_FALLBACK_NAME);
+        fntBorder = UtilesSwing.generarFuenteRecurso(prp.getProperty(PRP_FONT_BORDER_RESOURCE),
+                DEF_FONT_BORDER_SYSTEM_NAME,
+                DEF_FONT_BORDER_FALLBACK_NAME);
+
         // Etiqueta Pregunta
         lblPregunta = new JLabel(prp.getProperty(PRP_QUESTION, DEF_QUESTION));
-        lblPregunta.setFont(UtilesSwing.importarFuenteRecurso(
-                prp.getProperty(PRP_FORM_FONT1_RESOURCE, DEF_FORM_FONT1_RESOURCE)).
-                deriveFont(Font.PLAIN, 24f));
+        lblPregunta.setFont(fntControl.deriveFont(Font.PLAIN, 20f));
         lblPregunta.setHorizontalAlignment(JLabel.CENTER);
 
         // Opción SI
         rbtYes = new JRadioButton("Seguramente");
-        rbtYes.setFont(UtilesSwing.importarFuenteRecurso(
-                prp.getProperty(PRP_FORM_FONT1_RESOURCE, DEF_FORM_FONT1_RESOURCE)).
-                deriveFont(Font.PLAIN, 20f));
+        rbtYes.setFont(fntControl.deriveFont(Font.PLAIN, 20f));
         rbtYes.setPreferredSize(new Dimension(200, 30));
-        rbtYes.addActionListener(new AEM(this));
+        rbtYes.setFocusable(false);
 
         // Opción NO
         rbtNot = new JRadioButton("Dificilmente");
-        rbtNot.setFont(UtilesSwing.importarFuenteRecurso(
-                prp.getProperty(PRP_FORM_FONT1_RESOURCE, DEF_FORM_FONT1_RESOURCE)).
-                deriveFont(Font.PLAIN, 20f));
+        rbtNot.setFont(fntControl.deriveFont(Font.PLAIN, 20f));
         rbtNot.setPreferredSize(new Dimension(200, 30));
-        rbtNot.addActionListener(new AEM(this));
+        rbtNot.setFocusable(false);
 
         // Opción NS/NC
         rbtMay = new JRadioButton("No sabría decir");
-        rbtMay.setFont(UtilesSwing.importarFuenteRecurso(
-                prp.getProperty(PRP_FORM_FONT1_RESOURCE, DEF_FORM_FONT1_RESOURCE)).
-                deriveFont(Font.PLAIN, 20f));
+        rbtMay.setFont(fntControl.deriveFont(Font.PLAIN, 20f));
         rbtMay.setPreferredSize(new Dimension(200, 30));
-        rbtMay.addActionListener(new AEM(this));
+        rbtMay.setSelected(true);
+        rbtMay.requestFocus();
+        rbtMay.setFocusable(false);
 
         // Coordinador de botones
         bg = new ButtonGroup();
@@ -163,9 +171,7 @@ public final class GUI extends JFrame {
 
         // Borde Panel Pregunta
         brdPregunta = new TitledBorder("Pregunta");
-        brdPregunta.setTitleFont(UtilesSwing.importarFuenteRecurso(
-                prp.getProperty(PRP_FORM_FONT2_RESOURCE, DEF_FORM_FONT2_RESOURCE)).
-                deriveFont(Font.BOLD, 18f));
+        brdPregunta.setTitleFont(fntBorder.deriveFont(Font.BOLD, 18f));
 
         // Panel Pregunta
         pnlPregunta = new JPanel();
@@ -176,9 +182,7 @@ public final class GUI extends JFrame {
 
         // Borde Panel Opciones
         brdOpciones = new TitledBorder("Opciones");
-        brdOpciones.setTitleFont(UtilesSwing.importarFuenteRecurso(
-                prp.getProperty(PRP_FORM_FONT2_RESOURCE, DEF_FORM_FONT2_RESOURCE)).
-                deriveFont(Font.BOLD, 18f));
+        brdOpciones.setTitleFont(fntBorder.deriveFont(Font.BOLD, 18f));
 
         // Panel Opciones
         pnlOpciones = new JPanel();
@@ -193,9 +197,7 @@ public final class GUI extends JFrame {
 
         // Borde Panel Respuesta
         brdRespuesta = new TitledBorder("Respuesta");
-        brdRespuesta.setTitleFont(UtilesSwing.importarFuenteRecurso(
-                prp.getProperty(PRP_FORM_FONT2_RESOURCE, DEF_FORM_FONT2_RESOURCE)).
-                deriveFont(Font.BOLD, 18f));
+        brdRespuesta.setTitleFont(fntBorder.deriveFont(Font.BOLD, 18f));
 
         // Panel Respuesta
         pnlRespuesta = new JPanel(new GridBagLayout());
@@ -210,7 +212,7 @@ public final class GUI extends JFrame {
         pnlPpal.add(pnlRespuesta, BorderLayout.EAST);
         pnlPpal.add(pnlOpciones, BorderLayout.CENTER);
 
-        // Ventana principal
+        // Ventana Principal
         setContentPane(pnlPpal);
         setTitle(prp.getProperty(PRP_FORM_TITLE, DEF_FORM_TITLE));
         try {
@@ -238,11 +240,13 @@ public final class GUI extends JFrame {
         UtilesSwing.establecerFavicon(this, prp.getProperty(
                 PRP_FAVICON_RESOURCE, DEF_FAVICON_RESOURCE));
 
-        // Selección Inicial
-        rbtMay.doClick();
+        // Registro de los Gestores de Eventos
+        rbtYes.addActionListener(new AEM(this));
+        rbtNot.addActionListener(new AEM(this));
+        rbtMay.addActionListener(new AEM(this));
     }
 
-    public void procesarEncuesta(ActionEvent ae) {
+    public final void procesarEncuesta(ActionEvent ae) {
         // Recurso Imagen
         String recurso;
 
