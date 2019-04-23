@@ -209,17 +209,17 @@ public final class UtilesSwing {
         }
     }
 
-    // Escalar Image > Etiqueta
-    public static void escalarImagenEtiqueta(JLabel lblAct, Image imgIni, int ancAct, int altAct) {
-        try {
-            // Imagen Original >> Imagen Escalada 
-            Image imgFin = imgIni.getScaledInstance(ancAct, altAct, Image.SCALE_FAST);
+    // Image ( Tamaño INI ) > Image ( Tamaño FIN )
+    public static Image escalarImagen(Image imgIni, int ancAct, int altAct) {
+        Image imgFin;
 
-            // Icon > Etiqueta Imagen
-            lblAct.setIcon(new ImageIcon(imgFin));
+        try {
+            imgFin = imgIni.getScaledInstance(ancAct, altAct, Image.SCALE_FAST);
         } catch (Exception e) {
-            System.out.println("ERROR: No se ha podido adaptar imagen a etiqueta");
+            imgFin = imgIni;
         }
+
+        return imgFin;
     }
 
     // Portapapeles >> Texto
@@ -241,7 +241,6 @@ public final class UtilesSwing {
             System.out.println("ERROR: Lectura del portapapeles");
         }
 
-        // Texto extraido
         return result;
     }
 
@@ -349,7 +348,6 @@ public final class UtilesSwing {
 
     // Importar Fuente TTF - Fichero
     public static final Font importarFuenteFichero(String fichero) {
-        // Referencia a la fuente
         Font f;
 
         // Cargar Fuente
@@ -359,13 +357,11 @@ public final class UtilesSwing {
             f = null;
         }
 
-        // Devuelve fuente
         return f;
     }
 
     // Importar Fuente TTF - Recurso
     public static final Font importarFuenteRecurso(String recurso) {
-        // Referencia a la fuente
         Font f;
 
         // Cargar Fuente
@@ -375,7 +371,6 @@ public final class UtilesSwing {
             f = null;
         }
 
-        // Devuelve fuente
         return f;
     }
 
@@ -442,11 +437,17 @@ public final class UtilesSwing {
         return fuente;
     }
 
-    // Fuente ( Recurso | Sistema | Lógica ) + Estilo + Talla > Fuente
+    // Fuente ( Recurso | Sistema | Lógica ) > Fuente
     public static final Font generarFuenteRecurso(String recurso,
             String fuenteSistema, String fuenteLogica) {
         return generarFuenteRecurso(recurso, DEF_FONT_STYLE, DEF_FONT_STYLE,
                 fuenteSistema, fuenteLogica);
+    }
+
+    // Fuente ( Recurso ) > Fuente
+    public static final Font generarFuenteRecurso(String recurso) {
+        return generarFuenteRecurso(recurso, DEF_FONT_STYLE, DEF_FONT_STYLE,
+                DEF_FONT_FAMILY, FONT_LOGICAL_SERIF_NAME);
     }
 
     // Campo de texto con DATO + ExpReg + Texto campo vacío
@@ -517,25 +518,47 @@ public final class UtilesSwing {
         return validarCampo(txfActual, UtilesFecha.ER_FECHA, textoCampoVacio);
     }
 
+    // Validar Fuente en las Fuentes del Sistema
     public static final boolean validarFuenteSistema(String fuente) {
         return UtilesArrays.buscar(obtenerTipografiasSistema(), fuente) != -1;
     }
-    
+
+    // Recurso ( String ) > Image
     public static final Image importarImagenRecurso(String recurso) {
-        // Referencia Imagen
         Image img;
-        
+
         try {
             // URL del Recurso
             URL urlPpal = ClassLoader.getSystemResource(recurso);
-            
+
             // Imagen de la URL
             img = new ImageIcon(urlPpal).getImage();
-            
+
         } catch (Exception e) {
             img = new ImageIcon().getImage();
         }
-        
+
+        return img;
+    }
+
+    // Recurso ( String ) > Image ( Reescalada )
+    public static final Image importarImagenRecurso(String recurso, int ancho, int alto) {
+        // Referencia Imagen
+        Image img;
+
+        try {
+            // URL del Recurso
+            URL urlPpal = ClassLoader.getSystemResource(recurso);
+
+            // Imagen de la URL
+            img = new ImageIcon(urlPpal).getImage();
+        } catch (Exception e) {
+            img = new ImageIcon().getImage();
+        }
+
+        // Reescalado de la Imagen
+        img = escalarImagen(img, ancho, alto);
+
         // Devuelve la imagen
         return img;
     }
